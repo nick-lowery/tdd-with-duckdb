@@ -1,0 +1,86 @@
+---
+title: "tdd-with-duckdb"
+author: "Nick Lowery"
+format: html
+---
+
+# the use case
+
+what are we doing here?
+
+table(s) -> business logic -> table(s)
+
+workflow #1 - YOLO-SQL
+- have some idea of business logic needing to be implemented
+- write SQL queries in Athena console
+- run the query (limit rows returned)
+- inspect results
+- iterate until results seem right
+- deploy query
+
+benefits of workflow #1
+- dev and prod environments very close
+
+challenges with workflow #1
+- prefer DF APIs to SQL
+- easy to make assumptions about input data
+- iterations are slow, especially with big tables (wait for entire query to run)
+- tests are interactive and not written down
+- IDE not linked to version control
+- hard to collaborate
+
+workflow #2 - WAPish
+- have some idea of business logic needing to be implemented
+- write tests that make assumptions and transformations of business logic explicit
+  - includes tests of both inputs and results
+- make test fixtures for input data
+  - synthetic data for specific cases
+  - samples from production tables (catch edge cases)
+- write functions to transform inputs to outputs
+- run tests to validate functions
+- deploy functions
+
+benefits of workflow #2
+- explicit tests of input and output data
+  - forces you to think through expectations at the start
+- fast iterations during dev
+- tests (can be) automated
+- good integration with IDE, version control
+- git-based collaboration (PR, code review, etc.)
+
+challenges of workflow #2
+- more work to keep dev and prod environments close
+- learning curve for software dev practice
+
+# the workflow
+
+## setup
+
+### environment
+- pak / renv
+- duckdb
+- tidyverse
+
+## tests
+
+### expectations
+
+#### input data
+
+#### output data
+
+### fixtures
+
+porque no dos?
+
+#### synthetic data
+
+#### production samples
+
+## functions
+
+### iterating
+
+### bonus: documentation
+
+# summary
