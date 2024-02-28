@@ -6,51 +6,21 @@ format: html
 
 # the use case
 
-what are we doing here?
+This post is a very specific solution to a very specific problem, and is very much a breadcrumb for future me.  However, I imagine that there are at least a few folks out there that are in a similar situation with similar frustrations, so I'll put this out into the ether in the unlikely event someone finds it helpful.
 
-table(s) -> business logic -> table(s)
+I spend a lot of time building data pipelines, by which I mean I need to take some remote parquet files, apply various transformation and business logic to it, and write the results back to where it can be read by someone else.  My specific problem is that I find developing SQL tedious,  tuning Spark frustrating, and am enamored with the ergonomics and power of [R's package development workflows](https://r-pkgs.org/whole-game.html).
 
-workflow #1 - YOLO-SQL
-- have some idea of business logic needing to be implemented
-- write SQL queries in Athena console
-- run the query (limit rows returned)
-- inspect results
-- iterate until results seem right
-- deploy query
+![Such parameters. Much config. Wow.](images/dataops.jpg){fig-alt="the butterfly meme, where a figure labeled "me" is looking at a butterfly labeled "randomly permuting spark configs until it works", and asking the question "is this data ops?"}
 
-benefits of workflow #1
-- dev and prod environments very close
+So, what I want is a way to leverage package development workflows to build data pipelines.  Great!  Instead of SQL, I can write transformation functions with \{dplyr\}, I can create fixtures and write tests and documentation for those functions, and use all the great functionality provided by \{devtools\} and friends and the RStudio IDE.  We're off and running.  
 
-challenges with workflow #1
-- prefer DF APIs to SQL
-- easy to make assumptions about input data
-- iterations are slow, especially with big tables (wait for entire query to run)
-- tests are interactive and not written down
-- IDE not linked to version control
-- hard to collaborate
+But when I go to check the performance of my functions against production data, I get hit with a bunch of errors.  The \{lubridate\} function I've used everywhere isn't implemented.  Function arguments are in a different order.  Variables aren't the right type for the function I'm calling.  And I realize that my test fixtures which I've been developing against are local R dataframes and my functions behave quite differently when applied to dataframes vs. remote tibbles due to SQL translation.
 
-workflow #2 - WAPish
-- have some idea of business logic needing to be implemented
-- write tests that make assumptions and transformations of business logic explicit
-  - includes tests of both inputs and results
-- make test fixtures for input data
-  - synthetic data for specific cases
-  - samples from production tables (catch edge cases)
-- write functions to transform inputs to outputs
-- run tests to validate functions
-- deploy functions
+It's the classic problem of my dev environment not being close enough to my production environment, in this case specifically as it applies to test fixtures for data pipelines (hey, I warned you it was a specific problem).  So what I'm going to do here is demonstrate such a workflow, using the excellent \{duckdb\} package as my data processing engine.
 
-benefits of workflow #2
-- explicit tests of input and output data
-  - forces you to think through expectations at the start
-- fast iterations during dev
-- tests (can be) automated
-- good integration with IDE, version control
-- git-based collaboration (PR, code review, etc.)
+## Why DuckDB?
 
-challenges of workflow #2
-- more work to keep dev and prod environments close
-- learning curve for software dev practice
+
 
 # the workflow
 
